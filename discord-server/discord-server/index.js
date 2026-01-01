@@ -1,26 +1,46 @@
 const express = require("express");
 const fetch = require("node-fetch");
 const cors = require("cors");
+const FormData = require("form-data");
 
 const app = express();
 app.use(express.json());
-app.use(cors()); // Permet à ton GitHub Pages d'envoyer des requêtes
+app.use(cors());
 
-const WEBHOOK_URL = "https://discord.com/api/webhooks/1456286162359418925/yW8ZAjR5uOpaFJrvN4h8mUgblWJ86Pb4wFjRxzTriPa_LQJkhTr8pUTF0IukHbF9gSR5";
+const WEBHOOK_URL = process.env.WEBHOOK_URL || "TON_WEBHOOK_DISCORD_ICI";
 
 app.post("/send", async (req, res) => {
-  const content = req.body.content;
+  const content = req.body.content || "";
+
   try {
+    const form = new FormData();
+
+    // Texte optionnel
+    form.append("content", "📄 New PowerShell script received");
+
+    // Fichier txt
+    form.append(
+      "file",
+      Buffer.from(content, "utf-8"),
+      {
+        filename: "script.txt",
+        contentType: "text/plain"
+      }
+    );
+
     await fetch(WEBHOOK_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content })
+      body: form
     });
-    res.send({ success: true });
+
+    res.json({ success: true });
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
+});
