@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const WEBHOOK_URL = process.env.WEBHOOK_URL || "TON_WEBHOOK_DISCORD_ICI";
+const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
 app.post("/send", async (req, res) => {
   const content = req.body.content || "";
