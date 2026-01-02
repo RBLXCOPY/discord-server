@@ -7,7 +7,7 @@ const FormData = require("form-data");
 const app = express();
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 app.use(cors()); // permet à GitHub Pages d'envoyer la requête
 
 // Webhook sécurisé via variable d'environnement Render
